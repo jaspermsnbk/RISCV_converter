@@ -24,9 +24,6 @@ def init_instructions():
                 first = False
                 continue
             d[l[0]] = instruction(l[1],l[2],l[3],l[4],l[5])
-            # print(l)
-    # for k in d.keys():
-    #     print(k, d[k])
     return d
 
 def get_bin_str(x:int,l:int)->str:
@@ -67,11 +64,33 @@ def formatBinStr(arr:list,d:dict):
         # pass
         return f"{imm}{rs1_str}{inst.f3}{rd_str}{inst.op}"
     if inst.t == "S":
-        
-        pass
+        temp = []
+        imm = ""
+        for i in range(1,len(arr)):
+            if arr[i].startswith("x"):
+                temp.append(arr[i])
+            else:
+                imm = arr[i]
+        r1 = get_bin_str(int((temp[1])[1:]),5)
+        r2 = get_bin_str(int((temp[0])[1:]),5)
+        imm = get_bin_str(int(imm),12)
+        imm_upper = imm[0:7]
+        imm_lower = imm[7:]
+        return f"{imm_upper}{r2}{r1}{inst.f3}{imm_lower}{inst.op}"
     if inst.t == "B":
-        
-        pass
+        temp = []
+        imm = ""
+        for i in range(1,len(arr)):
+            if arr[i].startswith("x"):
+                temp.append(arr[i])
+            else:
+                imm = arr[i]
+        r1 = get_bin_str(int((temp[1])[1:]),5)
+        r2 = get_bin_str(int((temp[0])[1:]),5)
+        imm = get_bin_str(int(imm),13)
+        imm_upper = imm[0]+imm[2:8]
+        imm_lower = imm[8:]+imm[1]
+        return f"{imm_upper}{r2}{r1}{inst.f3}{imm_lower}{inst.op}"
     if inst.t == "U":
         
         pass
