@@ -1,5 +1,5 @@
 
-DEBUG_1=False
+DEBUG_1=True
 import csv
 class instruction:
     def __init__(self,op:int,f3:int,f7:int,t:str,i:int):
@@ -15,7 +15,7 @@ class instruction:
         return f"{self.op}, {self.f3}, {self.f7}, {self.t}, {self.i}"
 def init_instructions():
     d = {}
-    with open("RISC-V_Instructions.csv", 'r') as file:
+    with open("./RISC-V_Instructions.csv", 'r') as file:
         r = csv.reader(file)
         first = True
 
@@ -34,6 +34,12 @@ def get_bin_str(x:int,l:int)->str:
         si = 3
         f = "1"
     return (bin(x))[si:].rjust(l,f)
+
+def twos_comp(val, bits):
+    """compute the 2's complement of int value val"""
+    if (val & (1 << (bits - 1))) != 0: # if sign bit is set e.g., 8bit: 128-255
+        val = val - (1 << bits)        # compute negative value
+    return val                         # return positive value as is
 
 def formatBinStr(arr:list,d:dict):
     
@@ -85,11 +91,18 @@ def formatBinStr(arr:list,d:dict):
                 temp.append(arr[i])
             else:
                 imm = arr[i]
-        r1 = get_bin_str(int((temp[1])[1:]),5)
-        r2 = get_bin_str(int((temp[0])[1:]),5)
+        r1 = get_bin_str(int((temp[0])[1:]),5)
+        r2 = get_bin_str(int((temp[1])[1:]),5)
         imm = get_bin_str(int(imm),13)
         imm_upper = imm[0]+imm[2:8]
-        imm_lower = imm[8:]+imm[1]
+        imm_lower = imm[9:]+imm[1]
+        print("imm_upper:",imm_upper)
+        print("r2:",r2)
+        print("r1:",r1)
+        print("inst.f3:",inst.f3)
+        print("imm_lower:",imm_lower)
+        print("imm:",inst.op)
+
         return f"{imm_upper}{r2}{r1}{inst.f3}{imm_lower}{inst.op}"
     if inst.t == "U":
         
@@ -122,6 +135,7 @@ def run_tests():
             arr = inst.split()
             print(arr)
             res = formatBinStr(arr,d)
+            print("inst type: ", d[arr[0]].t)
             print("Expect:",test[1])
             print("Actual:",res)
             if res == test[1]:
