@@ -1,5 +1,5 @@
 
-DEBUG_1=True
+import sys
 import csv
 class instruction:
     def __init__(self,op:int,f3:int,f7:int,t:str,i:int):
@@ -105,11 +105,30 @@ def formatBinStr(arr:list,d:dict):
 
         return f"{imm_upper}{r2}{r1}{inst.f3}{imm_lower}{inst.op}"
     if inst.t == "U":
-        
-        pass
+        temp = []
+        imm = ""
+        for i in range(1,len(arr)):
+            if arr[i].startswith("x"):
+                temp.append(arr[i])
+            else:
+                imm = arr[i]
+        imm_upper = get_bin_str(int(imm),20)
+        rd_str = get_bin_str(int(temp[0][1:]),5)
+        return f"{imm_upper}{rd_str}{inst.op}"
     if inst.t == "J":
-        
-        pass
+        temp = []
+        imm = "0"
+        for i in range(1,len(arr)):
+            if arr[i].startswith("x"):
+                temp.append(arr[i])
+            else:
+                imm = arr[i]
+            
+            imm_temp = get_bin_str(int(imm),32)
+            imm_temp = imm_temp[-32:-12]
+            rd_str = get_bin_str(int(temp[0][1:]),5)
+            imm_tot = f"{imm_temp[-20]}{imm_temp[-10:]}{imm_temp[-11]}{imm_temp[-19:-11]}"
+        return f"{imm_tot}{rd_str}{inst.op}"
     
     return "instruction not recognized or supported"
 
@@ -148,18 +167,16 @@ def run_tests():
         print("total failed:",f)
     return
 def main():
-    if DEBUG_1:
-        d = init_instructions()
-        inst = input("Enter an Instruction: ")
-        inst = inst.replace(","," ")
-        inst = inst.replace("("," ")
-        inst = inst.replace(")","")
-        arr = inst.split()
-        print(arr)
-        print(formatBinStr(arr,d))
+    if len(sys.argv) > 1 and sys.argv[1] == "-u":
+        run_tests()
         return
-    run_tests()
-    # print(bin(4)[2:])
+    d = init_instructions()
+    inst = input("Enter an Instruction: ")
+    inst = inst.replace(","," ")
+    inst = inst.replace("("," ")
+    inst = inst.replace(")","")
+    arr = inst.split()
+    print(arr)
+    print(formatBinStr(arr,d))
     return
-
 main()
